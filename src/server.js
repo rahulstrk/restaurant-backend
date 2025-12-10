@@ -5,13 +5,7 @@ const { port } = config;
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
-  console.log(`
-╔════════════════════════════════════════════╗
-║   Restaurant Search API is Running        ║
-║   Server: http://localhost:${port}         ║
-║   Environment: ${config.nodeEnv.toUpperCase().padEnd(22)}║
-╚════════════════════════════════════════════╝
-  `);
+  console.log(`Server running at http://localhost:${port} [env: ${config.nodeEnv}]`);
 });
 
 // Handle graceful shutdown

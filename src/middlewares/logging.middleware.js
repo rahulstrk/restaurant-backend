@@ -41,7 +41,7 @@ export function errorLogger(err, req, res, next) {
   const requestId = req.id || 'unknown';
   
   // eslint-disable-next-line no-console
-  console.error(`[${requestId}] ❌ ERROR: ${err.message}`);
+  console.error(`[${requestId}]  ERROR: ${err.message}`);
   
   if (err.stack) {
     // eslint-disable-next-line no-console

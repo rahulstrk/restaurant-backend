@@ -117,10 +117,10 @@ export async function seed() {
     console.log(`✓ Inserted ${ordersData.length} orders`);
 
     await conn.commit();
-    console.log('✅ Database seeded successfully');
+    console.log(' Database seeded successfully');
   } catch (err) {
     await conn.rollback();
-    console.error('❌ Seeding failed:', err.message);
+    console.error(' Seeding failed:', err.message);
     throw err;
   } finally {
     conn.release();
