@@ -1,116 +1,141 @@
-# Restaurant Backend Service
+# Restaurant Backend
 
-A simple Node.js + MySQL backend for searching restaurants by dish name and price range.
+A simple Node.js + MySQL backend that lets users search for restaurants by dish name within a price range and returns the top 10 results by order count.
 
-## Features
-- Search for restaurants by dish name and price range
-- Returns top 10 restaurants by order count for the dish
-- Clean, modular code using ES6 modules
-- Environment-based configuration
-- Sample data seeding and SQL schema included
+## Overview
 
-## Prerequisites
-- Node.js (v14+ recommended)
-- MySQL (v5.7+ recommended)
-
-## Setup Instructions
-
-1. **Clone the repository:**
-   ```bash
-   git clone <your-repo-url>
-   cd Restaurant-Backend
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables:**
-   - Copy `.env.example` to `.env` and fill in your MySQL credentials.
-   - Example:
-     ```
-     DB_HOST=localhost
-     DB_USER=restaurant_user
-     DB_PASSWORD=your_password
-     DB_NAME=restaurant_db
-     DB_PORT=3306
-     DB_CONNECTION_LIMIT=10
-     DB_WAIT_FOR_CONNECTIONS=true
-     ```
-
-4. **Create the database:**
-   - Log in to MySQL and run:
-     ```sql
-     CREATE DATABASE restaurant_db;
-     ```
-
-5. **Create tables:**
-   - Run the schema SQL:
-     ```bash
-     mysql -u <user> -p restaurant_db < db/schema.sql
-     ```
-
-6. **Seed sample data:**
-   - (If you have a seed script) Run:
-     ```bash
-     npm run seed
-     ```
-
-7. **Start the server:**
-   ```bash
-   npm run dev
-   # or
-   node index.js
-   ```
-
-## API Usage
-
-### Search Dishes
-- **Endpoint:** `GET /search/dishes?name=<dish>&minPrice=<min>&maxPrice=<max>`
-- **Returns:** Top 10 restaurants with the most orders for the dish in the price range.
-- **Example:**
-  ```
-  GET /search/dishes?name=biryani&minPrice=150&maxPrice=300
-  ```
-- **Sample Response:**
-  ```json
-  {
-    "restaurants": [
-      {
-        "restaurantId": 1,
-        "restaurantName": "Hyderabadi Spice House",
-        "city": "Hyderabad",
-        "dishName": "Chicken Biryani",
-        "dishPrice": 220,
-        "orderCount": 96
-      }
-    ]
-  }
-  ```
-
-### Health Check
-- **Endpoint:** `GET /health`
-- **Returns:** `{ status: 'Server is running' }`
+- Language/Framework: Node.js, Express
+- Database: MySQL (mysql2)
+- Architecture: routes → controller → service → repository → db
+- Status: Migrations and seed scripts included; `/search/dishes` endpoint working locally
 
 ## Project Structure
+
 ```
-.
-├── index.js                # Server entry point
-├── .env.example            # Environment variable template
-├── db/
-│   └── schema.sql          # SQL schema for tables
-├── scripts/
-│   └── seed.js             # (Optional) Data seeding script
-└── src/
-    ├── app.js              # Express app setup
-    ├── config/
-    │   └── database.js     # MySQL connection pool
-    ├── middleware/         # Error handler, logger, etc.
-    └── routes/             # API routes
+src/
+	app.js            # Express app and middleware
+	server.js         # Entry point
+	config/index.js   # Environment configuration
+	db/pool.js        # MySQL connection pool
+	routes/search.routes.js
+	controllers/search.controller.js
+	services/search.service.js
+	repositories/search.repository.js
+	middlewares/*     # logging, security, validation, response, error handlers
+scripts/
+	migrate.db.js     # Run schema migrations
+	seed.db.js        # Seed sample data
 ```
 
-## Notes
-- Use a dedicated MySQL user (not root) for security.
-- All configuration is via `.env`.
-- For any issues, check your database connection and credentials first.
+## Prerequisites
+
+- Node.js (v18+ recommended)
+- MySQL server running locally or accessible remotely
+
+## Environment Variables
+
+Create a `.env` file in the project root:
+
+```
+PORT=3000
+NODE_ENV=development
+
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=restaurant_user
+DB_PASSWORD=your_password
+DB_NAME=restaurant_search
+DB_CONNECTION_LIMIT=10
+```
+
+## Install
+
+```zsh
+npm install
+```
+
+## Database: Migrate and Seed
+
+Run migrations to create tables and then seed with sample data.
+
+```zsh
+npm run migrate
+npm run seed
+```
+
+If you see MySQL permission errors, ensure the database and user exist and have privileges.
+
+## Run the server
+
+```zsh
+npm run dev    # starts with nodemon on PORT from .env
+# or
+npm start      # starts once without nodemon
+```
+
+Visit health check:
+
+```
+GET http://localhost:3000/health
+```
+
+## API
+
+### Search dishes
+
+Endpoint:
+
+```
+GET /search/dishes?name=<dish>&minPrice=<min>&maxPrice=<max>
+```
+
+Query parameters:
+
+- `name` (string, required): dish name (partial match, case-insensitive)
+- `minPrice` (number, required): minimum price in the restaurant's currency
+- `maxPrice` (number, required): maximum price in the restaurant's currency
+
+Response: 200 OK
+
+```json
+{
+	"success": true,
+	"data": [
+		{
+			"restaurantId": 1,
+			"restaurantName": "Spice Hub",
+			"city": "Bengaluru",
+			"dishName": "Chicken Biryani",
+			"dishPrice": 220,
+			"orderCount": 57
+		}
+		// up to 10 entries
+	],
+	"timestamp": "2025-12-11T10:00:00.000Z"
+}
+```
+
+Example curl:
+
+```zsh
+curl "http://localhost:3000/search/dishes?name=biryani&minPrice=200&maxPrice=250"
+```
+
+## Troubleshooting
+
+- Port in use (EADDRINUSE): stop the other process using 3000, or change `PORT` in `.env`.
+- MySQL connection errors: verify credentials and that the user has `SELECT/INSERT/UPDATE/DELETE` and `CREATE` privileges on `DB_NAME`.
+- Migrations/seed not found: ensure you run commands from the project root.
+
+## Deployment
+
+You can deploy on free platforms like Railway or Render:
+
+- Set environment variables from `.env` in the platform dashboard
+- Provision a MySQL database (or connect to your own) and update `DB_*` vars
+- On first deploy, run the migrate and seed commands via the platform console
+
+## License
+
+MIT
+
