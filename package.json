@@ -1,25 +1,43 @@
 {
-  "name": "restaurant-backend",
+  "name": "restaurant-search-api",
   "version": "1.0.0",
+  "description": "Backend service for searching restaurants based on dishes with price range filtering",
   "type": "module",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "seed": "node scripts/seed.js",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "migrate": "node scripts/migrate.db.js",
+    "seed": "node scripts/seed.db.js",
+    "setup": "npm run migrate && npm run seed",
+    "lint": "eslint src --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "Restaurant search backend service",
+  "keywords": [
+    "restaurant",
+    "search",
+    "api",
+    "nodejs",
+    "express",
+    "mysql",
+    "es6",
+    "import",
+    "middleware"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.2.1",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "morgan": "^1.10.1",
     "mysql2": "^3.15.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "eslint": "^8.52.0",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   }
 }
